@@ -63,7 +63,7 @@ jobs:
           dotnet build samples/HttpPathCheck.iOS -c Release -p:RuntimeIdentifier=iossimulator-arm64
           dotnet build samples/HttpPathCheck.Android -c Release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: nupkg
           path: artifacts/*.*nupkg

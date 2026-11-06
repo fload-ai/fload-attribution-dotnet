@@ -43,7 +43,10 @@ namespace Fload.HttpAttribution
         static FloadAppFacts Facts(Context context)
         {
             var package = context.PackageManager.GetPackageInfo(context.PackageName, 0);
+            // LongVersionCode from Android 9 (API 28), VersionCode before it.
+#pragma warning disable CA1416, CA1422
             var build = Build.VERSION.SdkInt >= BuildVersionCodes.P ? package.LongVersionCode : package.VersionCode;
+#pragma warning restore CA1416, CA1422
             return new FloadAppFacts
             {
                 Platform = "android",
