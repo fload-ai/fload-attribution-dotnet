@@ -33,15 +33,12 @@ That builds the xcframework (`native/ios/build-xcframework.sh`) and the AAR
 (`native/android/build-aar.sh`, from the tag in `native/android/VERSION`),
 packs `artifacts/Fload.Attribution.<version>.nupkg` and runs the tests.
 
-Each .NET for iOS release needs one Xcode version. If `dotnet build` says
-"This version of .NET for iOS requires Xcode X", install the iOS workload
-that matches your Xcode. For Xcode 26.4:
-
-```sh
-dotnet workload config --update-mode manifests
-echo '{ "microsoft.net.sdk.ios": "26.4.10259/10.0.100", "microsoft.net.sdk.maccatalyst": "26.4.10259/10.0.100" }' > rollback.json
-dotnet workload update --from-rollback-file rollback.json
-```
+Each .NET for iOS release builds with one Xcode version, and the newest
+release usually wants an Xcode newer than yours ("This version of .NET for
+iOS requires Xcode X"). `scripts/install-workloads.sh` installs the
+workloads with the release that matches your selected Xcode. It reads each
+release's required Xcode from its pack on nuget.org
+(`scripts/pick-ios-workload.py`).
 
 ## Run the sample against the local stub
 
