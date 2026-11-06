@@ -21,12 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Select the newest Xcode 26
-        run: |
-          xcode="$(find /Applications -maxdepth 1 -name 'Xcode_26*.app' | sort -V | tail -1)"
-          sudo xcode-select -s "$xcode"
-          xcodebuild -version
-
       - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
@@ -36,8 +30,10 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Workloads (ios matched to Xcode, android, maui)
-        run: scripts/install-workloads.sh
+      - name: Xcode and workloads (the newest Xcode with a matching .NET for iOS; android; maui)
+        run: |
+          scripts/install-workloads.sh --select-xcode
+          xcodebuild -version
 
       - name: Package version
         id: version
