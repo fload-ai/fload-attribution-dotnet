@@ -1,7 +1,7 @@
 name: Build
 
 # Builds the natives from source, packs Fload.Attribution, runs the tests and
-# builds every sample. Called by ci.yml and release.yml.
+# builds every sample. Called by ci.yml and publish.yml.
 
 on:
   workflow_call:

@@ -1,0 +1,70 @@
+name: Publish
+
+# Publishes Fload.Attribution to nuget.org with NuGet Trusted Publishing
+# (GitHub OIDC, no stored API key). The nuget.org trust policy is tied to this
+# file name: keep it publish.yml.
+#
+# Run it by hand on the release tag:
+#   gh workflow run publish.yml --ref 1.0.1                  # dry run: build, test, pack, no push
+#   gh workflow run publish.yml --ref 1.0.1 -f dry_run=false # push to nuget.org
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build, test and pack only; push nothing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # the OIDC token NuGet/login exchanges for a short-lived key
+    steps:
+      - name: Run from the release tag, equal to the package version
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" != "tag" ] || [ "$GITHUB_REF_NAME" != "$VERSION" ]; then
+            msg="run this on the tag $VERSION (got $GITHUB_REF_TYPE $GITHUB_REF_NAME)"
+            if [ "${{ inputs.dry_run }}" = "true" ]; then echo "::warning::$msg"; else echo "::error::$msg"; exit 1; fi
+          fi
+
+      - uses: actions/download-artifact@v5
+        with:
+          name: nupkg
+          path: artifacts
+
+      - name: What would be pushed
+        run: ls -l artifacts
+
+      - uses: actions/setup-dotnet@v5
+        if: ${{ !inputs.dry_run }}
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: NuGet login (OIDC)
+        if: ${{ !inputs.dry_run }}
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push to nuget.org
+        if: ${{ !inputs.dry_run }}
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

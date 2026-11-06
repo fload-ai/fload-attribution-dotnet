@@ -76,7 +76,17 @@ AdServices token). On an emulator with Google Play, `playReferrer.status` is
 ## Releases
 
 One version for the package, in `src/Fload.Attribution/Fload.Attribution.csproj`
-and `FloadAttribution.Version`. Tag it (`1.0.0`). The release workflow builds
-the natives from source, packs and attaches the `.nupkg` to the GitHub
-release. It pushes to nuget.org only when the repository variable
-`NUGET_ENABLED` is `true`, from the protected `nuget` environment.
+and `FloadAttribution.Version` (CI fails when they differ). A release:
+
+1. Merge the version bump and tag it (`1.0.1`).
+2. Run the **Publish** workflow on that tag. By default it is a dry run: it
+   builds the natives from source, tests, packs, and lists what it would push.
+
+   ```sh
+   gh workflow run publish.yml --ref 1.0.1
+   ```
+
+3. With `-f dry_run=false` it pushes to nuget.org through NuGet Trusted
+   Publishing (`NuGet/login`, GitHub OIDC; the repository variable
+   `NUGET_USER` names the nuget.org account). The nuget.org trust policy names
+   this repository and `publish.yml`, so keep that file name.
