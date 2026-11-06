@@ -1,0 +1,12 @@
+bin/
+obj/
+artifacts/
+.build/
+.swiftpm/
+*.user
+.vs/
+.idea/
+.DS_Store
+# Built from the native SDKs by native/*/build-*.sh, never committed.
+src/Fload.Attribution/Platforms/iOS/FloadAttributionBridge.xcframework/
+src/Fload.Attribution/Platforms/Android/fload-attribution-android.aar

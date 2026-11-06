@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles the HTTP-path snippet the way a classic Xamarin project would:
+       netstandard2.0 and C# 7.3. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../snippets/http-path/FloadHttpAttribution.cs" />
+  </ItemGroup>
+</Project>

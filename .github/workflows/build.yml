@@ -1,0 +1,74 @@
+name: Build
+
+# Builds the natives from source, packs Fload.Attribution, runs the tests and
+# builds every sample. Called by ci.yml and release.yml.
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: The package version
+        value: ${{ jobs.build.outputs.version }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Select the newest Xcode 26
+        run: |
+          xcode="$(find /Applications -maxdepth 1 -name 'Xcode_26*.app' | sort -V | tail -1)"
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Workloads (ios matched to Xcode, android, maui)
+        run: scripts/install-workloads.sh
+
+      - name: Package version
+        id: version
+        run: |
+          version="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/Fload.Attribution/Fload.Attribution.csproj)"
+          grep -q "const string Version = \"$version\"" src/Fload.Attribution/FloadAttribution.cs \
+            || { echo "::error::FloadAttribution.Version differs from the csproj Version $version"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: iOS bridge xcframework (from fload-attribution-ios)
+        run: native/ios/build-xcframework.sh
+
+      - name: Android AAR (from fload-attribution-android)
+        run: native/android/build-aar.sh
+
+      - name: Pack
+        run: dotnet pack src/Fload.Attribution -c Release -o artifacts
+
+      - name: Tests (HTTP path, contract against the local stub, fallback)
+        run: dotnet test tests/HttpPath.Tests -c Release
+
+      - name: Samples build (no device)
+        run: |
+          dotnet build samples/MauiSample -f net10.0-ios -c Release -p:RuntimeIdentifier=iossimulator-arm64
+          dotnet build samples/MauiSample -f net10.0-android -c Release
+          dotnet build samples/MauiSample -f net10.0-maccatalyst -c Release
+          dotnet build samples/HttpPathCheck.iOS -c Release -p:RuntimeIdentifier=iossimulator-arm64
+          dotnet build samples/HttpPathCheck.Android -c Release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: artifacts/*.*nupkg
+          if-no-files-found: error

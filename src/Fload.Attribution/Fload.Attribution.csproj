@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0;net9.0-ios;net10.0-ios;net9.0-android;net10.0-android</TargetFrameworks>
+    <RootNamespace>Fload.Attribution</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Bound native types are internal; generated code has no XML docs. -->
+    <NoWarn>$(NoWarn);CS1591;BI1234</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <PackageId>Fload.Attribution</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Fload</Authors>
+    <Company>Fload</Company>
+    <Description>Fload install attribution for .NET MAUI and .NET for iOS and Android: counts your app's installs in Fload and attributes them to Apple Ads (AdServices) and the Google Play Install Referrer. No IDFA, no advertising ID, no tracking prompt.</Description>
+    <PackageTags>attribution;apple-ads;adservices;install-referrer;maui;ios;android;fload</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/fload-ai/fload-attribution-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fload-ai/fload-attribution-dotnet.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright (c) 2026 Fload</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsIOS>$(TargetFramework.Contains('-ios'))</IsIOS>
+    <IsAndroid>$(TargetFramework.Contains('-android'))</IsAndroid>
+    <SupportedOSPlatformVersion Condition="'$(IsIOS)' == 'true'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="'$(IsAndroid)' == 'true'">24</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <!-- Each platform's files compile only for that platform. -->
+    <Compile Remove="Platforms/**" />
+    <None Include="Platforms/**" />
+  </ItemGroup>
+
+  <!-- iOS: an Objective-C binding over FloadAttributionBridge.xcframework
+       (native/ios), which wraps the Swift SDK fload-attribution-ios. -->
+  <PropertyGroup Condition="'$(IsIOS)' == 'true'">
+    <IsBindingProject>true</IsBindingProject>
+    <CompressBindingResourcePackage>true</CompressBindingResourcePackage>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(IsIOS)' == 'true'">
+    <ObjcBindingApiDefinition Include="Platforms/iOS/ApiDefinition.cs" />
+    <Compile Include="Platforms/iOS/FloadAttribution.iOS.cs" />
+    <NativeReference Include="Platforms/iOS/FloadAttributionBridge.xcframework">
+      <Kind>Framework</Kind>
+      <SmartLink>false</SmartLink>
+      <Frameworks>Foundation AdServices</Frameworks>
+    </NativeReference>
+  </ItemGroup>
+
+  <!-- Android: a Java binding over the fload-attribution-android AAR (native/android). -->
+  <ItemGroup Condition="'$(IsAndroid)' == 'true'">
+    <AndroidLibrary Include="Platforms/Android/fload-attribution-android.aar" />
+    <TransformFile Include="Platforms/Android/Metadata.xml" />
+    <Compile Include="Platforms/Android/FloadAttribution.Android.cs" />
+    <PackageReference Include="Xamarin.Google.Android.InstallReferrer" Version="2.2.0.9" />
+    <PackageReference Include="Xamarin.Kotlin.StdLib" Version="2.3.10" />
+  </ItemGroup>
+
+  <!-- Every other target (Windows, Mac Catalyst, tests): calls do nothing. -->
+  <ItemGroup Condition="'$(IsIOS)' != 'true' and '$(IsAndroid)' != 'true'">
+    <Compile Include="Platforms/Other/FloadAttribution.Other.cs" />
+  </ItemGroup>
+
+</Project>

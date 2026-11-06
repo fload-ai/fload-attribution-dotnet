@@ -1,0 +1,59 @@
+name: Release
+
+# On a version tag: builds and tests from source, checks the tag equals the
+# package version, and attaches the .nupkg to a GitHub release. Pushes to
+# nuget.org only when the repository variable NUGET_ENABLED is "true", from
+# the protected "nuget" environment (secret NUGET_API_KEY).
+
+on:
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  github-release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: The tag is the package version
+        run: |
+          [ "${{ github.ref_name }}" = "${{ needs.build.outputs.version }}" ] \
+            || { echo "::error::tag ${{ github.ref_name }} but package version ${{ needs.build.outputs.version }}"; exit 1; }
+      - uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: artifacts
+      - name: GitHub release with the package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" artifacts/* --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" --notes "Fload.Attribution ${{ github.ref_name }}. See CHANGELOG.md." \
+            || gh release upload "${{ github.ref_name }}" artifacts/* --repo "${{ github.repository }}" --clobber
+
+  nuget:
+    needs: [build, github-release]
+    if: vars.NUGET_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: nuget
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: artifacts
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+      - name: Push to nuget.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          [ -n "$NUGET_API_KEY" ] || { echo "::error::set NUGET_API_KEY in the nuget environment"; exit 1; }
+          dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
