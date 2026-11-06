@@ -6,13 +6,15 @@ Fload's own native SDKs. Do not paste code from other attribution SDKs.
 ## Layout
 
 ```
-native/ios/       Swift package: FLDAttribution, an Objective-C facade over
-                  fload-attribution-ios, built into FloadAttributionBridge.xcframework
+native/ios/       Swift package that packages fload-attribution-ios (and its
+                  Objective-C facade, FLDAttribution) as FloadAttributionBridge.xcframework
 native/android/   build-aar.sh: builds the AAR from a fload-attribution-android tag
 src/Fload.Attribution/
                   the NuGet package: the public C# API, the iOS binding
                   (Platforms/iOS/ApiDefinition.cs), the Android binding
                   (Platforms/Android/Metadata.xml) and the do-nothing fallback
+samples/NetiOSSample/      plain .NET for iOS sample (no MAUI)
+samples/NetAndroidSample/  plain .NET for Android sample (no MAUI)
 samples/MauiSample/        .NET MAUI sample (iOS, Android, Mac Catalyst)
 samples/HttpPathCheck.*/   run the classic-Xamarin HTTP path on a simulator and an emulator
 snippets/http-path/        the HTTP path for classic Xamarin (docs/xamarin-http.md)
@@ -29,7 +31,8 @@ Needs Xcode 26, the .NET SDK in `global.json` with the `ios`, `android` and
 ./build.sh
 ```
 
-That builds the xcframework (`native/ios/build-xcframework.sh`) and the AAR
+That builds the xcframework (`native/ios/build-xcframework.sh`, from the
+fload-attribution-ios version pinned in `native/ios/Package.swift`) and the AAR
 (`native/android/build-aar.sh`, from the tag in `native/android/VERSION`),
 packs `artifacts/Fload.Attribution.<version>.nupkg` and runs the tests.
 

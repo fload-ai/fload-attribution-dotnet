@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A plain .NET for Android app (no MAUI) using Fload.Attribution from ../../artifacts
+       (nuget.config): run `dotnet pack` first. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationId>com.fload.samples.netandroid</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <!-- Debug builds, and -p:FloadLocalStub=true, send to the local ingest stub. Never production. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' or '$(FloadLocalStub)' == 'true'">
+    <DefineConstants>$(DefineConstants);FLOAD_LOCAL_STUB</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Fload.Attribution" Version="1.0.1" />
+  </ItemGroup>
+</Project>

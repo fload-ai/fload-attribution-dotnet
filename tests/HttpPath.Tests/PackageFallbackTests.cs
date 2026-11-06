@@ -18,6 +18,12 @@ public sealed class PackageFallbackTests
     }
 
     [Fact]
+    public void The_http_path_reports_the_package_version()
+    {
+        Assert.Equal(FloadAttribution.Version, Fload.HttpAttribution.FloadHttpAttribution.SdkVersion);
+    }
+
+    [Fact]
     public void A_null_key_is_refused()
     {
         Assert.Throws<ArgumentNullException>(() => FloadAttribution.Configure(null!));

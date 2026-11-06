@@ -3,12 +3,12 @@ using System;
 namespace Fload.Attribution;
 
 /// <summary>
-/// Fload install attribution for .NET MAUI and .NET for iOS and Android.
+/// Fload install attribution for .NET for iOS and Android, with or without MAUI.
 /// </summary>
 /// <remarks>
-/// Call <see cref="Configure(string, FloadOptions?)"/> once, early in launch (in
-/// <c>MauiProgram.CreateMauiApp</c>, or your <c>AppDelegate</c> or
-/// <c>Application.OnCreate</c>). On the app's first launch the native SDK reports
+/// Call <see cref="Configure(string, FloadOptions?)"/> once, early in launch: in your
+/// <c>AppDelegate.FinishedLaunching</c> (iOS), <c>Application.OnCreate</c> or launcher
+/// activity (Android), or <c>MauiProgram.CreateMauiApp</c> (MAUI). On the app's first launch the native SDK reports
 /// the install to Fload: on iOS with Apple's AdServices attribution token, on
 /// Android with the Google Play Install Referrer. It keeps the request queued on
 /// disk until Fload has it. No IDFA, no advertising ID, no tracking prompt.
@@ -21,7 +21,7 @@ namespace Fload.Attribution;
 public static partial class FloadAttribution
 {
     /// <summary>This package's version.</summary>
-    public const string Version = "1.0.0";
+    public const string Version = "1.0.1";
 
     /// <summary>The write key prefix Fload issues. The key is public: it can only report installs for one app.</summary>
     public const string WriteKeyPrefix = "fload_pk_";

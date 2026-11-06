@@ -1,19 +1,21 @@
 # Fload Attribution for .NET
 
-Counts your app's installs in Fload and attributes them: on iOS to Apple Ads
-through Apple's AdServices API, on Android with Google Play's Install
-Referrer. No IDFA, no advertising ID, no App Tracking Transparency prompt.
+For **.NET for iOS and Android, with or without MAUI.** Counts your app's
+installs in Fload and attributes them: on iOS to Apple Ads through Apple's
+AdServices API, on Android with Google Play's Install Referrer. No IDFA, no
+advertising ID, no App Tracking Transparency prompt.
 
-For .NET MAUI and .NET for iOS and Android (where Xamarin apps moved after
-Microsoft ended Xamarin support). The package wraps Fload's native SDKs,
+The package has no MAUI dependency. It works in a plain .NET for iOS or
+.NET for Android app (where Xamarin apps moved after Microsoft ended Xamarin
+support) and in .NET MAUI. It wraps Fload's native SDKs,
 [fload-attribution-ios](https://github.com/fload-ai/fload-attribution-ios)
 and [fload-attribution-android](https://github.com/fload-ai/fload-attribution-android),
 so the behaviour is theirs: the same queue, retries and privacy rules.
 
 | Target | Minimum | Native SDK |
 | --- | --- | --- |
-| `net10.0-ios`, `net9.0-ios` | iOS 15 | fload-attribution-ios 1.0.0 |
-| `net10.0-android`, `net9.0-android` | Android 7.0 (API 24) | fload-attribution-android 1.0.1 |
+| `net10.0-ios`, `net9.0-ios` | iOS 15 | fload-attribution-ios 1.0.2 |
+| `net10.0-android`, `net9.0-android` | Android 7.0 (API 24) | fload-attribution-android 1.0.2 |
 | `net10.0`, `net9.0` (Windows, Mac Catalyst, tests) | | none: every call does nothing |
 
 Classic Xamarin.iOS and Xamarin.Android are not supported (see
@@ -27,38 +29,79 @@ dotnet add package Fload.Attribution
 
 ## Use
 
+### .NET for iOS
+
+Call `Configure` once, early in `FinishedLaunching`:
+
 ```csharp
 using Fload.Attribution;
+using Foundation;
+using UIKit;
 
-public static class MauiProgram
+[Register("AppDelegate")]
+public class AppDelegate : UIApplicationDelegate
 {
-    public static MauiApp CreateMauiApp()
+    public override bool FinishedLaunching(UIApplication application, NSDictionary? launchOptions)
     {
-        // Once, early in launch.
         FloadAttribution.Configure("fload_pk_…");
-        // ...
+
+        // Optional: link your user id (e.g. RevenueCat's AppUserID) to the install.
+        // Call it again after a login.
+        FloadAttribution.SetUserId(appUserId);
+
+        // ... your window and root view controller
+        return true;
     }
 }
+```
 
-// Optional: link your user id (e.g. RevenueCat's AppUserID) to the install.
-FloadAttribution.SetUserId(appUserId);
+### .NET for Android
+
+Call `Configure` once in your `Application.OnCreate` (or your launcher
+activity's `OnCreate`):
+
+```csharp
+using Android.App;
+using Android.Runtime;
+using Fload.Attribution;
+
+[Application]
+public class App : Application
+{
+    public App(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership) { }
+
+    public override void OnCreate()
+    {
+        base.OnCreate();
+        FloadAttribution.Configure(this, "fload_pk_…");
+        FloadAttribution.SetUserId(appUserId);   // optional
+    }
+}
+```
+
+### .NET MAUI
+
+Once, in `MauiProgram.CreateMauiApp`. It is the same call; on Android it uses
+`Android.App.Application.Context`:
+
+```csharp
+FloadAttribution.Configure("fload_pk_…");
 ```
 
 The key is your app's public write key from Fload. It can only report
 installs for that one app, so it is safe to ship in the binary.
 
-Outside MAUI, call `Configure` from your `AppDelegate.FinishedLaunching`
-(iOS) or `Application.OnCreate` (Android). On Android,
-`FloadAttribution.Configure(context, key)` takes an explicit context; the
-plain overload uses `Android.App.Application.Context`.
-
 | Call | What it does |
 | --- | --- |
-| `FloadAttribution.Configure(key, options?)` | Starts the SDK. Returns at once; the native SDK works on its own background thread. The first call stands. |
+| `FloadAttribution.Configure(key, options?)` | Starts the SDK. Returns at once; the native SDK works on its own background thread. The first call stands. On Android, `Configure(context, key, options?)` takes an explicit context. |
 | `FloadAttribution.SetUserId(id)` | Links your user id to this install. Safe before `Configure` and on every launch; the same id is sent once. Null or blank is ignored. |
 | `FloadAttribution.InstallReference` | This install's random reference, for Fload support. Null until the SDK has loaded its state. |
 | `FloadAttribution.IsSupported` | True on iOS and Android. |
 | `FloadAttribution.NativeSdkVersion` | The native SDK's version. |
+
+Samples: [`samples/NetiOSSample`](samples/NetiOSSample) and
+[`samples/NetAndroidSample`](samples/NetAndroidSample) (no MAUI), and
+[`samples/MauiSample`](samples/MauiSample).
 
 ## What it does
 

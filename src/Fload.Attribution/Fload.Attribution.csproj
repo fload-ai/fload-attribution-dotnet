@@ -12,11 +12,11 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>Fload.Attribution</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Fload</Authors>
     <Company>Fload</Company>
-    <Description>Fload install attribution for .NET MAUI and .NET for iOS and Android: counts your app's installs in Fload and attributes them to Apple Ads (AdServices) and the Google Play Install Referrer. No IDFA, no advertising ID, no tracking prompt.</Description>
-    <PackageTags>attribution;apple-ads;adservices;install-referrer;maui;ios;android;fload</PackageTags>
+    <Description>Fload install attribution for .NET for iOS and Android, with or without MAUI: counts your app's installs in Fload and attributes them to Apple Ads (AdServices) and the Google Play Install Referrer. No IDFA, no advertising ID, no tracking prompt.</Description>
+    <PackageTags>attribution;apple-ads;adservices;install-referrer;dotnet-ios;dotnet-android;maui;ios;android;fload</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fload-ai/fload-attribution-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fload-ai/fload-attribution-dotnet.git</RepositoryUrl>
