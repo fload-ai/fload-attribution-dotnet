@@ -1,8 +1,8 @@
 // swift-tools-version:5.9
 import PackageDescription
 
-// An Objective-C facade over the Swift SDK, built as a dynamic framework so
-// .NET for iOS can bind it. All logic stays in fload-attribution-ios.
+// Packages the Swift SDK (fload-attribution-ios) as a dynamic framework so
+// .NET for iOS can bind its Objective-C facade, FLDAttribution. No code of its own.
 let package = Package(
     name: "FloadAttributionBridge",
     platforms: [.iOS(.v15)],
@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "FloadAttributionBridge", type: .dynamic, targets: ["FloadAttributionBridge"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/fload-ai/fload-attribution-ios.git", exact: "1.0.0"),
+        .package(url: "https://github.com/fload-ai/fload-attribution-ios.git", exact: "1.0.2"),
     ],
     targets: [
         .target(

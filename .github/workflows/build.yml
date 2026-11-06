@@ -60,6 +60,8 @@ jobs:
           dotnet build samples/MauiSample -f net10.0-ios -c Release -p:RuntimeIdentifier=iossimulator-arm64
           dotnet build samples/MauiSample -f net10.0-android -c Release
           dotnet build samples/MauiSample -f net10.0-maccatalyst -c Release
+          dotnet build samples/NetiOSSample -c Release -p:RuntimeIdentifier=iossimulator-arm64
+          dotnet build samples/NetAndroidSample -c Release
           dotnet build samples/HttpPathCheck.iOS -c Release -p:RuntimeIdentifier=iossimulator-arm64
           dotnet build samples/HttpPathCheck.Android -c Release
 

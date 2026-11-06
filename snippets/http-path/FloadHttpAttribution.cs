@@ -52,7 +52,7 @@ namespace Fload.HttpAttribution
     public sealed class FloadHttpAttribution
     {
         public const string SdkName = "fload-attribution-dotnet-http";
-        public const string SdkVersion = "1.0.0";
+        public const string SdkVersion = "1.0.1";
         public static readonly Uri ProductionEndpoint = new Uri("https://ingest.fload.com");
 
         // Apple's token lives 24 hours. After 23 the install goes without it.

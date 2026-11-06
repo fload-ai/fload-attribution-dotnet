@@ -3,7 +3,7 @@ using ObjCRuntime;
 
 namespace Fload.Attribution.Native
 {
-    // FLDAttribution in native/ios/Sources/FloadAttributionBridge/FLDAttribution.swift.
+    // FLDAttribution: fload-attribution-ios's own Objective-C facade (1.0.2+), packaged by native/ios.
     [Internal]
     [BaseType(typeof(NSObject), Name = "FLDAttribution")]
     interface FLDAttribution
