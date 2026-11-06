@@ -11,12 +11,17 @@ band="$(dotnet --version | sed -E 's/^([0-9]+)\.([0-9]+)\..*/\1.\2.100/')"
 xcode_of() { defaults read "$1/Contents/Info.plist" CFBundleShortVersionString | cut -d. -f1,2; }
 
 if [ "${1:-}" = "--select-xcode" ]; then
-  apps=()
-  versions=()
+  # The image's default Xcode first, then the others newest first. Real
+  # directories only: xcode-select on a symlinked Xcode confuses actool.
+  default="$(xcode-select -p | sed 's#/Contents/Developer$##')"
+  apps=("$default")
+  versions=("$(xcode_of "$default")")
   while read -r app; do
+    [ "$app" = "$default" ] && continue
     apps+=("$app")
     versions+=("$(xcode_of "$app")")
-  done < <(find /Applications -maxdepth 1 -name 'Xcode_[0-9]*.app' | sort -rV)
+  done < <(find /Applications -maxdepth 1 -type d -name 'Xcode_[0-9]*.app' | sort -rV)
+  echo "Xcodes: ${apps[*]}"
   read -r xcode ios < <(python3 -I scripts/pick-ios-workload.py "$band" "${versions[@]}") \
     || { echo "No installed Xcode (${versions[*]}) has a .NET for iOS release in the $band band." >&2; exit 1; }
   for i in "${!apps[@]}"; do
