@@ -22,6 +22,8 @@ if [ "${1:-}" = "--select-xcode" ]; then
   for i in "${!apps[@]}"; do
     if [ "${versions[$i]}" = "$xcode" ]; then sudo xcode-select -s "${apps[$i]}"; break; fi
   done
+  # A newly selected Xcode needs its first-launch setup, or its tools (actool) are not found.
+  sudo xcodebuild -runFirstLaunch
 else
   xcode="$(xcodebuild -version | head -1 | awk '{print $2}' | cut -d. -f1,2)"
   read -r xcode ios < <(python3 -I scripts/pick-ios-workload.py "$band" "$xcode") \
