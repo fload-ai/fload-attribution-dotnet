@@ -17,6 +17,6 @@
     <DefineConstants>$(DefineConstants);FLOAD_LOCAL_STUB</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fload.Attribution" Version="1.0.1" />
+    <PackageReference Include="Fload.Attribution" Version="1.1.0" />
   </ItemGroup>
 </Project>

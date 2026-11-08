@@ -4,7 +4,8 @@
 It checks each request against the wire contract (Fload's
 packages/shared-types/src/contracts/attribution-ingest.ts), answers like the
 real routes (202 / 400 / 401 / 410 / 413), and appends every request it got
-to a JSON Lines log.
+to a JSON Lines log. An sdk.wrapper Fload would drop (an unknown name, a
+version that is not semver) is logged as sdk.wrapperDropped, as Fload drops it.
 
   python3 stub.py --port 3901 --key fload_pk_test_local --log requests.jsonl
 
@@ -25,6 +26,9 @@ INSTANT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:
 APPLE_STATUSES = {"token", "token_expired", "unsupported_os", "token_error"}
 PLAY_STATUSES = {"ok", "unavailable", "not_supported", "error"}
 MAX_BODY = 2048
+# FLO-3957: the wrappers Fload knows (ATTRIBUTION_SDK_WRAPPERS in the contract).
+WRAPPERS = {"flutter", "react-native", "capacitor", "cordova", "unity", "dotnet", "kmp"}
+SEMVER = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.+-]+)?$")
 
 
 class Invalid(Exception):
@@ -69,6 +73,7 @@ def check_install(body):
     need(isinstance(sdk, dict), "sdk must be an object")
     text(sdk.get("name"), "sdk.name", 1, 64)
     text(sdk.get("version"), "sdk.version", 1, 64)
+    sdk_wrapper(sdk)
     instant(body.get("firstLaunchAt"), "firstLaunchAt", optional=False)
     text(body.get("appUserId"), "appUserId", 1, 256, optional=True)
     apple, play = body.get("appleAds"), body.get("playReferrer")
@@ -89,6 +94,24 @@ def check_install(body):
         text(play.get("installVersion"), "playReferrer.installVersion", 1, 64, optional=True)
         gpi = play.get("googlePlayInstant")
         need(gpi is None or isinstance(gpi, bool), "playReferrer.googlePlayInstant must be a boolean")
+
+
+def sdk_wrapper(sdk):
+    """sdk.wrapper as Fload reads it: one it does not know (an unknown name, a
+    version that is not semver) is dropped, never refused. The stub marks which,
+    in sdk["wrapper"] (kept) or sdk["wrapperDropped"]."""
+    wrapper = sdk.get("wrapper")
+    if wrapper is None:
+        return
+    ok = (
+        isinstance(wrapper, dict)
+        and wrapper.get("name") in WRAPPERS
+        and isinstance(wrapper.get("version"), str)
+        and len(wrapper["version"]) <= 64
+        and SEMVER.match(wrapper["version"])
+    )
+    if not ok:
+        sdk["wrapperDropped"] = sdk.pop("wrapper")
 
 
 def check_identify(body):

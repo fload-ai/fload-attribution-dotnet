@@ -3,6 +3,7 @@ using Android.Content;
 using NativeFload = Com.Fload.Attribution.Fload;
 using NativeOptions = Com.Fload.Attribution.FloadOptions;
 using NativeLogLevel = Com.Fload.Attribution.FloadLogLevel;
+using NativeWrapper = Com.Fload.Attribution.FloadWrapper;
 
 namespace Fload.Attribution;
 
@@ -43,8 +44,8 @@ public static partial class FloadAttribution
             FloadLogLevel.Debug => NativeLogLevel.Debug!,
             _ => NativeLogLevel.Warning!,
         };
-        return options.Endpoint is null
-            ? new NativeOptions("https://ingest.fload.com", level)
-            : new NativeOptions(options.Endpoint.AbsoluteUri.TrimEnd('/'), level);
+        var endpoint = options.Endpoint is null ? "https://ingest.fload.com" : options.Endpoint.AbsoluteUri.TrimEnd('/');
+        // FloadOptions(String, FloadLogLevel, FloadWrapper): the native SDK sends it as sdk.wrapper.
+        return new NativeOptions(endpoint, level, new NativeWrapper(WrapperName, Version));
     }
 }

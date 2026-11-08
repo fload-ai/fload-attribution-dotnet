@@ -75,7 +75,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<!-- The packed package from ../../artifacts (see nuget.config): run `dotnet pack` first. -->
-		<PackageReference Include="Fload.Attribution" Version="1.0.1" />
+		<PackageReference Include="Fload.Attribution" Version="1.1.0" />
 	</ItemGroup>
 
 </Project>

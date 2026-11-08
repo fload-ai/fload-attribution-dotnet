@@ -3,7 +3,8 @@ using ObjCRuntime;
 
 namespace Fload.Attribution.Native
 {
-    // FLDAttribution: fload-attribution-ios's own Objective-C facade (1.0.2+), packaged by native/ios.
+    // FLDAttribution: fload-attribution-ios's own Objective-C facade, packaged by native/ios.
+    // The wrapper selector is 1.1.0+.
     [Internal]
     [BaseType(typeof(NSObject), Name = "FLDAttribution")]
     interface FLDAttribution
@@ -12,9 +13,10 @@ namespace Fload.Attribution.Native
         [Export("sdkVersion")]
         string SdkVersion { get; }
 
+        // A nil or blank wrapper name or version sends no sdk.wrapper.
         [Static]
-        [Export("configureWithKey:endpoint:logLevel:")]
-        void Configure(string key, [NullAllowed] string endpoint, nint logLevel);
+        [Export("configureWithKey:endpoint:logLevel:wrapperName:wrapperVersion:")]
+        void Configure(string key, [NullAllowed] string endpoint, nint logLevel, [NullAllowed] string wrapperName, [NullAllowed] string wrapperVersion);
 
         [Static]
         [Export("setUserId:")]

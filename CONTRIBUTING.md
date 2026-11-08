@@ -7,7 +7,8 @@ Fload's own native SDKs. Do not paste code from other attribution SDKs.
 
 ```
 native/ios/       Swift package that packages fload-attribution-ios (and its
-                  Objective-C facade, FLDAttribution) as FloadAttributionBridge.xcframework
+                  Objective-C facade, FLDAttribution) as FloadAttributionBridge.xcframework;
+                  simulator-check.sh runs the bound selector against it
 native/android/   build-aar.sh: builds the AAR from a fload-attribution-android tag
 src/Fload.Attribution/
                   the NuGet package: the public C# API, the iOS binding
@@ -42,6 +43,17 @@ iOS requires Xcode X"). `scripts/install-workloads.sh` installs the
 workloads with the release that matches your selected Xcode. It reads each
 release's required Xcode from its pack on nuget.org
 (`scripts/pick-ios-workload.py`).
+
+## Check the iOS binding on a simulator
+
+```sh
+native/ios/simulator-check.sh
+```
+
+It builds the xcframework, calls `FLDAttribution` with the configure selector
+that `ApiDefinition.cs` binds and the wrapper name and version the package
+passes, and checks that the local stub got the install with `sdk.wrapper`
+`{"dotnet", <the csproj Version>}`. Needs only Xcode and python3.
 
 ## Run the sample against the local stub
 
