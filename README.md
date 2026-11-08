@@ -14,8 +14,8 @@ so the behaviour is theirs: the same queue, retries and privacy rules.
 
 | Target | Minimum | Native SDK |
 | --- | --- | --- |
-| `net10.0-ios`, `net9.0-ios` | iOS 15 | fload-attribution-ios 1.0.2 |
-| `net10.0-android`, `net9.0-android` | Android 7.0 (API 24) | fload-attribution-android 1.0.2 |
+| `net10.0-ios`, `net9.0-ios` | iOS 15 | fload-attribution-ios 1.1.0 |
+| `net10.0-android`, `net9.0-android` | Android 7.0 (API 24) | fload-attribution-android 1.1.0 |
 | `net10.0`, `net9.0` (Windows, Mac Catalyst, tests) | | none: every call does nothing |
 
 Classic Xamarin.iOS and Xamarin.Android are not supported (see

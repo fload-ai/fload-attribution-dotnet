@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0
+
+- native SDKs 1.1.0; installs name this wrapper (FLO-3957). Every native
+  configure call passes `dotnet` and the package version, which the native
+  SDKs send as `sdk.wrapper`. iOS binds
+  `configureWithKey:endpoint:logLevel:wrapperName:wrapperVersion:`; Android
+  calls `FloadOptions(String, FloadLogLevel, FloadWrapper)`.
+- The HTTP path reports `fload-attribution-dotnet-http` `1.1.0`.
+- `native/ios/simulator-check.sh` runs the bound configure selector against
+  the native SDK on a simulator and checks what the local stub ingest got.
+
 ## 1.0.1
 
 - First release of `Fload.Attribution`, for .NET for iOS and Android with or

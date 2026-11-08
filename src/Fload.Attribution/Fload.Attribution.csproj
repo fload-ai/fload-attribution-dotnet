@@ -12,7 +12,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>Fload.Attribution</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Authors>Fload</Authors>
     <Company>Fload</Company>
     <Description>Fload install attribution for .NET for iOS and Android, with or without MAUI: counts your app's installs in Fload and attributes them to Apple Ads (AdServices) and the Google Play Install Referrer. No IDFA, no advertising ID, no tracking prompt.</Description>

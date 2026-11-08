@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "FloadAttributionBridge", type: .dynamic, targets: ["FloadAttributionBridge"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/fload-ai/fload-attribution-ios.git", exact: "1.0.2"),
+        .package(url: "https://github.com/fload-ai/fload-attribution-ios.git", exact: "1.1.0"),
     ],
     targets: [
         .target(

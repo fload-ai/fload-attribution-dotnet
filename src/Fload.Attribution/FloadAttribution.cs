@@ -21,7 +21,14 @@ namespace Fload.Attribution;
 public static partial class FloadAttribution
 {
     /// <summary>This package's version.</summary>
-    public const string Version = "1.0.1";
+    public const string Version = "1.1.0";
+
+    /// <summary>
+    /// The name every native configure call gives this wrapper, with <see cref="Version"/>.
+    /// The native SDKs send both as <c>sdk.wrapper</c>, so Fload knows the install came
+    /// through this package.
+    /// </summary>
+    internal const string WrapperName = "dotnet";
 
     /// <summary>The write key prefix Fload issues. The key is public: it can only report installs for one app.</summary>
     public const string WriteKeyPrefix = "fload_pk_";
